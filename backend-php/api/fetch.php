@@ -40,6 +40,10 @@ if (!$share->exists()) {
                 "encrypted" => $session->isEncrypted(),
                 "audio" => $session->getAudioMeta(),
                 "arrival" => $session->getArrival(),
+                "nextTurn" => $session->getNextTurn(),
+                "nextTurnDst" => $session->getNextTurnDst(),
+                "nextTurnIcon" => $session->getNextTurnIcon(),
+                "destination" => $session->getDestination(),
                 "salt" => $session->getEncryptionSalt()
             ));
             break;
@@ -51,6 +55,10 @@ if (!$share->exists()) {
                 "serverTime" => microtime(true),
                 "interval" => $share->getAutoInterval(),
                 "arrival" => $session->getArrival(),
+                "nextTurn" => $session->getNextTurn(),
+                "nextTurnDst" => $session->getNextTurnDst(),
+                "nextTurnIcon" => $session->getNextTurnIcon(),
+                "destination" => $session->getDestination(),
                 "audio" => $session->getAudioMeta(),
                 "points" => $share->getAllPoints($sinceTime)
             ));

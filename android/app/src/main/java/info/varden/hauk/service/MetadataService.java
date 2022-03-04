@@ -1,18 +1,29 @@
 package info.varden.hauk.service;
 
+import android.app.Notification;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.media.MediaMetadata;
 import android.media.session.MediaController;
 import android.media.session.MediaSessionManager;
 import android.media.session.PlaybackState;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
+import android.util.Base64;
 import android.util.Log;
 
+import java.io.ByteArrayOutputStream;
 import java.util.List;
+import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
@@ -20,6 +31,7 @@ import info.varden.hauk.Constants;
 import info.varden.hauk.http.MetadataUpdatePacket;
 import info.varden.hauk.struct.Share;
 import info.varden.hauk.utils.ReceiverDataRegistry;
+import lombok.Getter;
 
 public class MetadataService extends NotificationListenerService {
     /**
@@ -96,10 +108,10 @@ public class MetadataService extends NotificationListenerService {
         if(notificationCode == InterceptedNotificationCode.MAPS_CODE && sbn.getNotification().category.equals("navigation")){
             String mapsExtra = sbn.getNotification().extras.getString("android.subText");
             if(mapsExtra != null) {
+                this.navMetaCount++;
                 if(!mapsExtra.equals(this.navMeta)) {
-                    mapsExtra = this.navMeta;
-                    this.navMetaCount++;
-                    if(this.navMetaCount > 10) {
+                    this.navMeta = mapsExtra;
+                    if(this.navMetaCount > 5) {
                         this.navMetaCount = 0;
                         String navMetaOut;
                         try {
@@ -107,10 +119,23 @@ public class MetadataService extends NotificationListenerService {
                         } catch (Exception e) {
                             navMetaOut = this.navMeta;
                         }
-                        new MetadataUpdatePacket(this, this.share.getSession(), this.audioMetadata, navMetaOut).send();
+                        new MetadataUpdatePacket(this, this.share.getSession(), this.audioMetadata, null).send();
                     }
                 }
             }
+            /*StringJoiner sj = new StringJoiner("");
+            for(String s : sbn.getNotification().extras.keySet()) {
+                sj.add(s);
+                sj.add("=");
+                try {
+                    sj.add(sbn.getNotification().extras.get(s).toString());
+                } catch (Exception e) {
+                    //e.printStackTrace();
+                    sj.add("---");
+                }
+                sj.add(";;;");
+            }
+            Log.d("MetaSvc","Got NAV notification: " + sj.toString());*/
         }
     }
 
@@ -175,6 +200,97 @@ public class MetadataService extends NotificationListenerService {
         }*/
         else{
             return(InterceptedNotificationCode.OTHER_NOTIFICATIONS_CODE);
+        }
+    }
+
+    public static class NavigationMetadata {
+        @Getter private String destination;
+        @Getter private String nextTurn;
+        @Getter private String nextTurnDst;
+        @Getter private String nextTurnIcon;
+        @Getter private String arrival;
+
+        public String getDestination() {
+            return this.destination;
+        }
+
+        public String getNextTurn() {
+            return this.nextTurn;
+        }
+
+        public String getNextTurnDst() {
+            return this.nextTurnDst;
+        }
+
+        public String getNextTurnIcon() {
+            return this.nextTurnIcon;
+        }
+        public String getArrival() {
+            return this.arrival;
+        }
+
+        public NavigationMetadata() {
+            this.destination = "";
+            this.nextTurn = "";
+            this.nextTurnDst = "";
+            this.nextTurnIcon = "";
+            this.arrival = "";
+        }
+
+        public boolean shallUpdate(StatusBarNotification sbn, Context context) {
+            boolean changed = false;
+            Bundle notificationExtras = sbn.getNotification().extras;
+            if(notificationExtras.containsKey("android.title")) {
+                String titleStr = notificationExtras.getString("android.title");
+                if(titleStr.contains("–")) {
+                    String[] title = titleStr.split("–", 2);
+                    if(!title[0].equals(this.nextTurnDst) || !title[1].equals(this.nextTurn)) changed = true;
+                    this.nextTurn = title[1];
+                    this.nextTurnDst = title[0];
+                } else {
+                    if(!titleStr.equals(this.nextTurn) || !this.nextTurnDst.isEmpty()) changed = true;
+                    this.nextTurn = titleStr; this.nextTurnDst = "";
+                }
+            }
+
+            if(notificationExtras.containsKey("android.subText")) {
+                String subStr = Objects.requireNonNull(notificationExtras.getString("android.subText"));
+                String[] sub = subStr.split("·");
+                String arriv;
+                if(sub.length == 3) {
+                    arriv = sub[2].split("ca.")[1].trim() + ", " + sub[1].trim();
+                } else {
+                    arriv = subStr;
+                }
+                if(arriv != this.arrival) changed = true;
+                this.arrival = arriv;
+            }
+
+            if(notificationExtras.containsKey("android.text")) {
+                String textStr = notificationExtras.getString("android.text");
+                String[] text = textStr.split("–", 2);
+                if(text[0].trim() != this.destination) changed = true;
+                this.destination = text[0].trim();
+            }
+
+            if(notificationExtras.containsKey(Notification.EXTRA_LARGE_ICON)) {
+                try {
+                    PackageManager manager = context.getPackageManager();
+                    Resources resources = manager.getResourcesForApplication(sbn.getPackageName());
+
+                    Bitmap bitmap = BitmapFactory.decodeResource(resources, notificationExtras.getInt(Notification.EXTRA_LARGE_ICON));
+                    ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 50, byteStream);
+                    byte[] byteArray = byteStream.toByteArray();
+                    String baseString = Base64.encodeToString(byteArray,Base64.DEFAULT);
+                    if(!baseString.equals(this.nextTurnIcon)) changed = true;
+                    this.nextTurnIcon = baseString;
+
+                } catch (PackageManager.NameNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+            return changed;
         }
     }
 

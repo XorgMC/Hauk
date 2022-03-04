@@ -19,12 +19,30 @@ $session = new Client($memcache, $sid);
 if (!$session->exists()) die($LANG['session_expired']."\n");
 
 if (isset($_POST["audioMeta"])) {
-    $session->setAudioMeta($_POST["audioMeta"])->save();
+    $session->setAudioMeta($_POST["audioMeta"]);
 }
 
 if (isset($_POST["arrival"])) {
-    $session->setArrival($_POST["arrival"])->save();
+    $session->setArrival($_POST["arrival"]);
 }
+
+if (isset($_POST["target"])) {
+    $session->setTarget($_POST["target"]);
+}
+
+if (isset($_POST["nextTurn"])) {
+    $session->setNextTurn($_POST["nextTurn"]);
+}
+
+if (isset($_POST["nextTurnDst"])) {
+    $session->setNextTurnDst($_POST["nextTurnDst"]);
+}
+
+if (isset($_POST["nextTurnIcon"])) {
+    $session->setNextTurnIcon($_POST["nextTurnIcon"]);
+}
+
+$session->save();
 
 if ($session->hasExpired()) {
     echo $LANG['session_expired']."\n";

@@ -127,6 +127,8 @@ public enum Constants {
     public static final String PACKET_PARAM_ARRIVAL = "arrival";
     public static final String PACKET_PARAM_NEXTTURN = "nextTurn";
     public static final String PACKET_PARAM_NEXTTURN_DST = "nextTurnDst";
+    public static final String PACKET_PARAM_NEXTTURN_ICON = "nextTurnIcon";
+    public static final String PACKET_PARAM_DESTINATION = "destination";
 
     // Packet OK response header. All valid packets start with this line.
     public static final String PACKET_RESPONSE_OK = "OK";
