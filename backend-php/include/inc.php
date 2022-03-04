@@ -603,6 +603,10 @@ class Client {
                 "interval" => null,
                 "targets" => array(),
                 "points" => array(),
+                "arriveTime" => null,
+                "nextTurn" => null,
+                "nextTurnDst" => null,
+                "audioMeta" => null,
                 "encrypted" => 0,
                 "salt" => null
             );
@@ -782,6 +786,26 @@ class Client {
         do $sid = bin2hex(openssl_random_pseudo_bytes(SESSION_ID_SIZE));
         while ($this->memcache->get(PREFIX_SESSION.$this->sessionID) !== false);
         return $sid;
+    }
+
+    // Sets estimated time of arrival
+    public function setArrival($data) {
+        $this->sessionData["arriveTime"] = $data;
+        return $this;
+    }
+
+    // Gets ETA
+    public function getArrival() {
+        return $this->sessionData["arriveTime"];
+    }
+
+    public function setAudioMeta($data) {
+        $this->sessionData["audioMeta"] = $data;
+        return $this;
+    }
+
+    public function getAudioMeta() {
+        return $this->sessionData["audioMeta"];
     }
 }
 

@@ -38,6 +38,7 @@ if (!$share->exists()) {
                 "interval" => $session->getInterval(),
                 "points" => $session->getPoints($sinceTime),
                 "encrypted" => $session->isEncrypted(),
+                "audio" => $session->getAudioMeta(),
                 "salt" => $session->getEncryptionSalt()
             ));
             break;

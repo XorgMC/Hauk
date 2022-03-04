@@ -9,8 +9,11 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 
 import androidx.annotation.Nullable;
+
+import java.util.Objects;
 
 import info.varden.hauk.Constants;
 import info.varden.hauk.http.LocationUpdatePacket;
@@ -37,6 +40,7 @@ public final class LocationPushService extends Service {
     @SuppressWarnings("HardCodedStringLiteral")
     public static final String ACTION_ID = "info.varden.hauk.LOCATION_SERVICE";
 
+    public static final String ACTION_METADATA = "info.varden.hauk.ACTION_METADATA";
     /**
      * A task that should be run when locations start registering. Used further upstream to change a
      * label on the main activity.
@@ -98,6 +102,19 @@ public final class LocationPushService extends Service {
         this.locMan = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
     }
 
+    public void startMetadata() {
+        Intent intent = new Intent(this, MetadataService.class);
+        intent.setAction(MetadataService.ACTION_START);
+        intent.putExtra(Constants.EXTRA_SHARE, ReceiverDataRegistry.register(this.share));
+        startService(intent);
+    }
+
+    public void stopMetadata() {
+        Intent intent = new Intent(this, MetadataService.class);
+        intent.setAction(MetadataService.ACTION_STOP);
+        startService(intent);
+    }
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.i("Location push service %s was started, flags=%s, startId=%s", this, flags, startId); //NON-NLS
@@ -107,6 +124,8 @@ public final class LocationPushService extends Service {
         this.share = (Share) ReceiverDataRegistry.retrieve(intent.getIntExtra(Constants.EXTRA_SHARE, -1));
         GNSSActiveHandler parentHandler = (GNSSActiveHandler) ReceiverDataRegistry.retrieve(intent.getIntExtra(Constants.EXTRA_GNSS_ACTIVE_TASK, -1));
         this.handler = (Handler) ReceiverDataRegistry.retrieve(intent.getIntExtra(Constants.EXTRA_HANDLER, -1));
+
+        startMetadata();
 
         Log.d("Pusher %s was given extras stopTask=%s, share=%s, parentHandler=%s, handler=%s", this, stopTask, this.share, parentHandler, this.handler); //NON-NLS
 
@@ -148,6 +167,7 @@ public final class LocationPushService extends Service {
             Log.i("Service %s destroyed; removing updates from coarse location provider", this); //NON-NLS
             this.locMan.removeUpdates(this.listenCoarse);
         }
+        this.stopMetadata();
         Log.i("Service %s destroyed; removing updates from fine location provider", this); //NON-NLS
         this.listenFine.onStopped();
         this.locMan.removeUpdates(this.listenFine);

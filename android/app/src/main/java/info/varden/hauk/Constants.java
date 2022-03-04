@@ -99,6 +99,7 @@ public enum Constants {
     public static final String URL_PATH_CREATE_SHARE = "api/create.php";
     public static final String URL_PATH_CREATE_NEW_LINK = "api/new-link.php";
     public static final String URL_PATH_POST_LOCATION = "api/post.php";
+    public static final String URL_PATH_POST_EXTRA = "api/post-extra.php";
     public static final String URL_PATH_STOP_SHARING = "api/stop.php";
 
     // Packet parameter keys.
@@ -122,6 +123,10 @@ public enum Constants {
     public static final String PACKET_PARAM_SPEED = "spd";
     public static final String PACKET_PARAM_TIMESTAMP = "time";
     public static final String PACKET_PARAM_USERNAME = "usr";
+    public static final String PACKET_PARAM_AUDIOMETA = "audioMeta";
+    public static final String PACKET_PARAM_ARRIVAL = "arrival";
+    public static final String PACKET_PARAM_NEXTTURN = "nextTurn";
+    public static final String PACKET_PARAM_NEXTTURN_DST = "nextTurnDst";
 
     // Packet OK response header. All valid packets start with this line.
     public static final String PACKET_RESPONSE_OK = "OK";

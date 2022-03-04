@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 
 /**
  * A intent for tapping the persistent Hauk notification to return to the app.
@@ -32,6 +33,7 @@ final class ReopenIntent {
     PendingIntent toPending() {
         Intent intent = new Intent(this.ctx, this.activity);
         intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-        return PendingIntent.getActivity(this.ctx, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        int flags = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ? PendingIntent.FLAG_UPDATE_CURRENT|PendingIntent.FLAG_MUTABLE : PendingIntent.FLAG_UPDATE_CURRENT;
+        return PendingIntent.getActivity(this.ctx, 0, intent, flags);
     }
 }
