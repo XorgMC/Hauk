@@ -39,6 +39,7 @@ if (!$share->exists()) {
                 "points" => $session->getPoints($sinceTime),
                 "encrypted" => $session->isEncrypted(),
                 "audio" => $session->getAudioMeta(),
+                "test" => "bla",
                 "salt" => $session->getEncryptionSalt()
             ));
             break;
@@ -49,6 +50,8 @@ if (!$share->exists()) {
                 "expire" => $share->getExpirationTime(),
                 "serverTime" => microtime(true),
                 "interval" => $share->getAutoInterval(),
+                "test" => "bla",
+                "audio" => $session->getAudioMeta(),
                 "points" => $share->getAllPoints($sinceTime)
             ));
             break;
