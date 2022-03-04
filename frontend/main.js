@@ -527,9 +527,6 @@ function autoCenter() {
 function processUpdate(data, init) {
     document.getElementById("audio").textContent = data.audio;
     document.getElementById("arrival").textContent = data.arrival;
-    console.log(data.nextTurn)
-    console.log(data.nextTurnDst)
-    console.log(data.destination)
     var users = {};
     var multiUser = false;
     if (data.type == SHARE_TYPE_ALONE) {
