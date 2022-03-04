@@ -343,3 +343,11 @@ a:last-child > .store-icon {
     background: none;
     border: none;
 }
+
+.footer {
+	position: absolute;
+	z-index: 1000;
+	pointer-events: none;
+    bottom: 0;
+    background: rgba(128, 128, 128, 0.7);
+}
