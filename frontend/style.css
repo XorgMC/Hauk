@@ -348,21 +348,22 @@ a:last-child > .store-icon {
 	position: absolute;
 	z-index: 1000;
     left: 50%;
+    transform: translateX(-50%);
 	pointer-events: none;
     bottom: 0;
     background: rgba(12, 12, 12, 0.7);
     border-radius: 0.7rem 0.7rem 0 0;
 }
 
-#audio {
+.value {
     font-size: small;
     color: white;
-    margin: 0.5rem 1rem;
+    margin: 0rem 0.7rem 0.5rem;
     font-weight: 700;
 }
 
-.audiolbl {
+.label {
     font-size: 10px;
     color: white;
-    margin: 0.1rem 0.7rem;
+    margin: 0.5rem 0.7rem 0.1rem;
 }
