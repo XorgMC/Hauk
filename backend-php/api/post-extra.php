@@ -20,6 +20,8 @@ if (!$session->exists()) die($LANG['session_expired']."\n");
 
 if (isset($_POST["audio"])) {
     $session->setAudioMeta($_POST["audioMeta"])->save();
+} else {
+    $session->setAudioMeta("empty")->save();
 }
 
 if ($session->hasExpired()) {
