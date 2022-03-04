@@ -344,10 +344,15 @@ a:last-child > .store-icon {
     border: none;
 }
 
-.footer {
+#footer {
 	position: absolute;
 	z-index: 1000;
+    left: 50%;
 	pointer-events: none;
     bottom: 0;
-    background: rgba(128, 128, 128, 0.7);
+    background: rgba(12, 12, 12, 0.7);
+}
+
+#audio {
+    font-size: small;
 }
