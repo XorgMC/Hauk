@@ -18,10 +18,8 @@ $sid = $_POST["sid"];
 $session = new Client($memcache, $sid);
 if (!$session->exists()) die($LANG['session_expired']."\n");
 
-if (isset($_POST["audio"])) {
+if (isset($_POST["audioMeta"])) {
     $session->setAudioMeta($_POST["audioMeta"])->save();
-} else {
-    $session->setAudioMeta("empty")->save();
 }
 
 if ($session->hasExpired()) {
