@@ -29,15 +29,11 @@ public class MetadataUpdatePacket extends Packet {
         setParameter(Constants.PACKET_PARAM_AUDIOMETA, audioMeta.getTitle() + " - " + audioMeta.getArtist());
     }
 
-    public MetadataUpdatePacket(Context ctx, Session session, MetadataService.AudioMetadata audioMeta, MetadataService.NavigationMetadata navMeta) {
+    public MetadataUpdatePacket(Context ctx, Session session, MetadataService.AudioMetadata audioMeta, String navMeta) {
         super(ctx, session.getServerURL(), session.getConnectionParameters(), Constants.URL_PATH_POST_EXTRA);
         setParameter(Constants.PACKET_PARAM_SESSION_ID, session.getID());
 
-        setParameter(Constants.PACKET_PARAM_ARRIVAL, navMeta.getArrival());
-        setParameter(Constants.PACKET_PARAM_NEXTTURN, navMeta.getNextTurn());
-        setParameter(Constants.PACKET_PARAM_NEXTTURN_DST, navMeta.getNextTurnDst());
-        setParameter(Constants.PACKET_PARAM_NEXTTURN_ICON, "data:image/jpeg;base64," + navMeta.getNextTurnIcon());
-        setParameter(Constants.PACKET_PARAM_DESTINATION, navMeta.getDestination());
+        setParameter(Constants.PACKET_PARAM_ARRIVAL, navMeta);
 
         setParameter(Constants.PACKET_PARAM_AUDIOMETA, audioMeta.getTitle() + " - " + audioMeta.getArtist());
     }

@@ -606,9 +606,7 @@ class Client {
                 "arriveTime" => null,
                 "nextTurn" => null,
                 "nextTurnDst" => null,
-                "nextTurnIcon" => null,
                 "audioMeta" => null,
-                "destination" => null,
                 "encrypted" => 0,
                 "salt" => null
             );
@@ -808,41 +806,6 @@ class Client {
 
     public function getAudioMeta() {
         return $this->sessionData["audioMeta"];
-    }
-
-    public function setDestination($data) {
-        $this->sessionData["destination"] = $data;
-        return $this;
-    }
-
-    public function getDestination() {
-        return $this->sessionData["destination"];
-    }
-
-    public function setNextTurn($data) {
-        $this->sessionData["nextTurn"] = $data;
-        return $this;
-    }
-
-    public function getNextTurn() {
-        return $this->sessionData["nextTurn"];
-    }
-
-    public function setNextTurnDst($data) {
-        $this->sessionData["nextTurnDst"] = $data;
-        return $this;
-    }
-
-    public function getNextTurnDst() {
-        return $this->sessionData["nextTurnDst"];
-    }
-
-    public function setNextTurnIcon($data) {
-        $this->sessionData["nextTurnIcon"] = $data;
-    }
-
-    public function getNextTurnIcon($data) {
-        return $this->sessionData["nextTurnIcon"];
     }
 }
 
