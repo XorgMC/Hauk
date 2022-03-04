@@ -22,6 +22,10 @@ if (isset($_POST["audioMeta"])) {
     $session->setAudioMeta($_POST["audioMeta"])->save();
 }
 
+if (isset($_POST["arrival"])) {
+    $session->setArrival($_POST["arrival"])->save();
+}
+
 if ($session->hasExpired()) {
     echo $LANG['session_expired']."\n";
 } else {

@@ -13,6 +13,7 @@ import android.service.notification.StatusBarNotification;
 import android.util.Log;
 
 import java.util.List;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 import info.varden.hauk.Constants;
@@ -31,6 +32,9 @@ public class MetadataService extends NotificationListenerService {
      */
     private AudioMetadata audioMetadata;
 
+    private int navMetaCount = 0;
+    private String navMeta = "";
+
     /**
      * If service is enabled
      */
@@ -48,10 +52,7 @@ public class MetadataService extends NotificationListenerService {
         listen the notifications
      */
     private static final class ApplicationPackageNames {
-        public static final String FACEBOOK_PACK_NAME = "com.facebook.katana";
-        public static final String FACEBOOK_MESSENGER_PACK_NAME = "com.facebook.orca";
-        public static final String WHATSAPP_PACK_NAME = "com.whatsapp";
-        public static final String INSTAGRAM_PACK_NAME = "com.instagram.android";
+        public static final String MAPS_PACK_NAME = "com.google.android.apps.maps";
     }
 
     /*
@@ -59,10 +60,8 @@ public class MetadataService extends NotificationListenerService {
         the notifications, to decide whether we should do something or not
      */
     public static final class InterceptedNotificationCode {
-        public static final int FACEBOOK_CODE = 1;
-        public static final int WHATSAPP_CODE = 2;
-        public static final int INSTAGRAM_CODE = 3;
-        public static final int OTHER_NOTIFICATIONS_CODE = 4; // We ignore all notification with code == 4
+        public static final int MAPS_CODE = 1;
+        public static final int OTHER_NOTIFICATIONS_CODE = 0; // We ignore all notification with code == 4
     }
 
     @Override
@@ -94,17 +93,31 @@ public class MetadataService extends NotificationListenerService {
 
         this.getCurrentlyPlaying();
 
-        if(notificationCode != InterceptedNotificationCode.OTHER_NOTIFICATIONS_CODE){
-            Intent intent = new  Intent("com.github.chagall.notificationlistenerexample");
-            intent.putExtra("Notification Code", notificationCode);
-            sendBroadcast(intent);
+        if(notificationCode == InterceptedNotificationCode.MAPS_CODE && sbn.getNotification().category.equals("navigation")){
+            String mapsExtra = sbn.getNotification().extras.getString("android.subText");
+            if(mapsExtra != null) {
+                if(!mapsExtra.equals(this.navMeta)) {
+                    mapsExtra = this.navMeta;
+                    this.navMetaCount++;
+                    if(this.navMetaCount > 10) {
+                        this.navMetaCount = 0;
+                        String navMetaOut;
+                        try {
+                            navMetaOut = this.navMeta.split("ca.")[1].trim();
+                        } catch (Exception e) {
+                            navMetaOut = this.navMeta;
+                        }
+                        new MetadataUpdatePacket(this, this.share.getSession(), this.audioMetadata, navMetaOut).send();
+                    }
+                }
+            }
         }
     }
 
     @Override
     public void onNotificationRemoved(StatusBarNotification sbn){
         if(!this.enabled) return;
-        int notificationCode = matchNotificationCode(sbn);
+        /*int notificationCode = matchNotificationCode(sbn);
 
         if(notificationCode != InterceptedNotificationCode.OTHER_NOTIFICATIONS_CODE) {
 
@@ -113,14 +126,12 @@ public class MetadataService extends NotificationListenerService {
             if(activeNotifications != null && activeNotifications.length > 0) {
                 for (int i = 0; i < activeNotifications.length; i++) {
                     if (notificationCode == matchNotificationCode(activeNotifications[i])) {
-                        Intent intent = new  Intent("com.github.chagall.notificationlistenerexample");
-                        intent.putExtra("Notification Code", notificationCode);
-                        sendBroadcast(intent);
+                        Log.d("MetaSvc","Got NAV notification." + activeNotifications[i].getNotification().tickerText);
                         break;
                     }
                 }
             }
-        }
+        }*/
     }
 
     private boolean isPlaying(MediaController ctrl) {
@@ -153,16 +164,15 @@ public class MetadataService extends NotificationListenerService {
     private int matchNotificationCode(StatusBarNotification sbn) {
         String packageName = sbn.getPackageName();
 
-        if(packageName.equals(ApplicationPackageNames.FACEBOOK_PACK_NAME)
-                || packageName.equals(ApplicationPackageNames.FACEBOOK_MESSENGER_PACK_NAME)){
-            return(InterceptedNotificationCode.FACEBOOK_CODE);
+        if(packageName.equals(ApplicationPackageNames.MAPS_PACK_NAME)){
+            return(InterceptedNotificationCode.MAPS_CODE);
         }
-        else if(packageName.equals(ApplicationPackageNames.INSTAGRAM_PACK_NAME)){
+        /*else if(packageName.equals(ApplicationPackageNames.INSTAGRAM_PACK_NAME)){
             return(InterceptedNotificationCode.INSTAGRAM_CODE);
         }
         else if(packageName.equals(ApplicationPackageNames.WHATSAPP_PACK_NAME)){
             return(InterceptedNotificationCode.WHATSAPP_CODE);
-        }
+        }*/
         else{
             return(InterceptedNotificationCode.OTHER_NOTIFICATIONS_CODE);
         }

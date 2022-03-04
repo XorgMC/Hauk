@@ -526,6 +526,7 @@ function autoCenter() {
 // Parses the data returned from ./api/fetch.php and updates the map marker.
 function processUpdate(data, init) {
     document.getElementById("audio").textContent = data.audio;
+    document.getElementById("arrival").textContent = data.arrival;
     var users = {};
     var multiUser = false;
     if (data.type == SHARE_TYPE_ALONE) {
