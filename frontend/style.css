@@ -351,8 +351,18 @@ a:last-child > .store-icon {
 	pointer-events: none;
     bottom: 0;
     background: rgba(12, 12, 12, 0.7);
+    border-radius: 0.7rem 0.7rem 0 0;
 }
 
 #audio {
     font-size: small;
+    color: white;
+    margin: 0.5rem 1rem;
+    font-weight: 700;
+}
+
+.audiolbl {
+    font-size: 10px;
+    color: white;
+    margin: 0.1rem 0.7rem;
 }
