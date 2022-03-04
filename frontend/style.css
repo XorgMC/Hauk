@@ -355,6 +355,15 @@ a:last-child > .store-icon {
     border-radius: 0.7rem 0.7rem 0 0;
 }
 
+.cockpitbox {
+    float: left;
+    border-right: 1px solid gray;
+}
+
+.cockpitbox:last-of-type {
+    border-right: none;
+}
+
 .value {
     font-size: small;
     color: white;
